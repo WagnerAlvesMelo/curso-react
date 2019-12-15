@@ -1,26 +1,132 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+	constructor(){
+		super();
+		this.state = {lista:[], nome:'', email:'', senha:''};
+		this.cadastraForm	= this.cadastraForm.bind(this);
+		this.setNome 		= this.setNome.bind(this);
+		this.setEmail 		= this.setEmail.bind(this);
+		this.setSenha		= this.setSenha.bind(this);
+
+	};
+	componentDidMount(){
+		fetch('http://cdc-react.herokuapp.com/api/autores')
+		.then(response => response.json())
+		.then((data)=>{
+			this.setState({lista:data})
+		})
+	}
+
+	cadastraForm(evento){
+		evento.preventDefault();
+		fetch('http://cdc-react.herokuapp.com/api/autores',{
+			method:'POST',
+			headers:{
+				"Content-Type" : "application/json"	
+			},
+			body: JSON.stringify({
+				nome:this.state.nome, email: this.state.email, senha: this.state.senha
+			})
+		}).then((response)=>{
+			if(response.ok){
+				console.log("Cadastrado com sucesso")
+			}else{
+				console.log("Não foi possível cadastrar os dados enviados")
+			}
+		})
+	}
+
+	setNome(evento){
+		this.setState({nome:evento.target.value})
+	}
+
+	setEmail(evento){
+		this.setState({email:evento.target.value})
+	}
+
+	setSenha(evento){
+		this.setState({senha:evento.target.value})
+	}
+
+	render() {
+		return (
+			<div id="layout">
+				<a href="#menu" id="menuLink" className="menu-link">
+		
+					<span></span>
+					
+				</a>
+		
+				<div id="menu">
+					<div className="pure-menu">
+						<a className="pure-menu-heading" href="#">Company</a>
+			
+						<ul className="pure-menu-list">
+							<li className="pure-menu-item"><a href="#" className="pure-menu-link">Home</a></li>
+							<li className="pure-menu-item"><a href="#" className="pure-menu-link">Autor</a></li>
+							<li className="pure-menu-item"><a href="#" className="pure-menu-link">Livro</a></li>
+			
+			
+						</ul>
+					</div>
+				</div>
+			
+				<div id="main">
+					<div className="header">
+						<h1>Cadastro de Autores</h1>
+					</div>
+					<div className="content" id="content">
+						<div className="pure-form pure-form-aligned">
+						<form className="pure-form pure-form-aligned" onSubmit={this.cadastraForm}>
+							<div className="pure-control-group">
+								<label htmlFor="nome">Nome</label> 
+								<input id="nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}  />                  
+							</div>
+							<div className="pure-control-group">
+								<label htmlFor="email">Email</label> 
+								<input id="email" type="email" name="email" value={this.state.email}  onChange={this.setEmail}/>                  
+							</div>
+							<div className="pure-control-group">
+								<label htmlFor="senha">Senha</label> 
+								<input id="senha" type="password" name="senha" value={this.state.senha} onChange={this.setSenha}/>                                      
+							</div>
+							<div className="pure-control-group">                                  
+								<label></label> 
+								<button type="submit" className="pure-button pure-button-primary">Gravar</button>                                    
+							</div>
+						</form>             
+		
+						</div>  
+						<div>            
+						<table className="pure-table">
+							<thead>
+							<tr>
+								<th>Nome</th>
+								<th>email</th>
+							</tr>
+							</thead>
+							<tbody>
+							{
+								this.state.lista.map(dados=>{
+									return (
+										<tr key={dados.id}>
+											<td>{dados.nome}</td>
+											<td>{dados.email}</td>
+										</tr>
+									);
+								})
+							}
+							</tbody>
+						</table> 
+						</div>             
+					</div>
+				</div>            
+			</div>     
+		);
+	}
 }
+
 
 export default App;

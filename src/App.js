@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
+import InputCustomizado from './components/InputCustomizado';
 
 class App extends Component {
 	constructor(){
@@ -9,7 +10,6 @@ class App extends Component {
 		this.setNome 		= this.setNome.bind(this);
 		this.setEmail 		= this.setEmail.bind(this);
 		this.setSenha		= this.setSenha.bind(this);
-
 	};
 	componentDidMount(){
 		fetch('http://cdc-react.herokuapp.com/api/autores')
@@ -30,11 +30,10 @@ class App extends Component {
 				nome:this.state.nome, email: this.state.email, senha: this.state.senha
 			})
 		}).then((response)=>{
-			if(response.ok){
-				console.log("Cadastrado com sucesso")
-			}else{
-				console.log("Não foi possível cadastrar os dados enviados")
-			}
+			response.json()
+			.then((resultado)=>{
+				this.setState({lista:resultado});
+			})
 		})
 	}
 
@@ -80,19 +79,10 @@ class App extends Component {
 					<div className="content" id="content">
 						<div className="pure-form pure-form-aligned">
 						<form className="pure-form pure-form-aligned" onSubmit={this.cadastraForm}>
+							<InputCustomizado id="nome" label="Nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}/>
+							<InputCustomizado id="email" label="Email" type="email" name="email" value={this.state.email} onChange={this.setEmail}/>
+							<InputCustomizado id="senha" label="Senha" type="password" name="senha" value={this.state.senha} onChange={this.setSenha}/>
 							<div className="pure-control-group">
-								<label htmlFor="nome">Nome</label> 
-								<input id="nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}  />                  
-							</div>
-							<div className="pure-control-group">
-								<label htmlFor="email">Email</label> 
-								<input id="email" type="email" name="email" value={this.state.email}  onChange={this.setEmail}/>                  
-							</div>
-							<div className="pure-control-group">
-								<label htmlFor="senha">Senha</label> 
-								<input id="senha" type="password" name="senha" value={this.state.senha} onChange={this.setSenha}/>                                      
-							</div>
-							<div className="pure-control-group">                                  
 								<label></label> 
 								<button type="submit" className="pure-button pure-button-primary">Gravar</button>                                    
 							</div>

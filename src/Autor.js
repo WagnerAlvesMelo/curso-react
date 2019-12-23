@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
 import InputCustomizado from './components/InputCustomizado';
+import PubSub from 'pubsub-js';
 
 class FormularioAutor extends Component{
     constructor(){
@@ -24,7 +25,7 @@ class FormularioAutor extends Component{
 		}).then((response)=>{
 			response.json()
 			.then((resultado)=>{
-				this.props.atualizaListagem(resultado);
+				PubSub.publish('novo-registro-adicionado',resultado);
 			})
 		})
 	}
@@ -43,25 +44,24 @@ class FormularioAutor extends Component{
 
     render(){
         return(
-        <div className="pure-form pure-form-aligned">
-        <form className="pure-form pure-form-aligned" onSubmit={this.cadastraForm}>
-            <InputCustomizado id="nome" label="Nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}/>
-            <InputCustomizado id="email" label="Email" type="email" name="email" value={this.state.email} onChange={this.setEmail}/>
-            <InputCustomizado id="senha" label="Senha" type="password" name="senha" value={this.state.senha} onChange={this.setSenha}/>
-            <div className="pure-control-group">
-                <label></label> 
-                <button type="submit" className="pure-button pure-button-primary">Gravar</button>                                    
-            </div>
-        </form>             
+            <div className="pure-form pure-form-aligned">
+            <form className="pure-form pure-form-aligned" onSubmit={this.cadastraForm}>
+                <InputCustomizado id="nome" label="Nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}/>
+                <InputCustomizado id="email" label="Email" type="email" name="email" value={this.state.email} onChange={this.setEmail}/>
+                <InputCustomizado id="senha" label="Senha" type="password" name="senha" value={this.state.senha} onChange={this.setSenha}/>
+                <div className="pure-control-group">
+                    <label></label> 
+                    <button type="submit" className="pure-button pure-button-primary">Gravar</button>                                    
+                </div>
+            </form>             
 
-        </div>  );
+            </div>
+        );
     }
 }
 
 class TabelaAutores extends Component{
-    constructor(){
-        super();
-    }
+
     render(){
         return(
             <div>            
@@ -95,26 +95,25 @@ export default class AutorBox extends Component{
     constructor() {
         super();
         this.state = {lista : []};
-        this.atualizaListagem = this.atualizaListagem.bind(this);
     }
+
 	componentDidMount(){
 		fetch('http://cdc-react.herokuapp.com/api/autores')
 		.then(response => response.json())
 		.then((resposta)=>{
-			this.setState({lista:resposta})
+			this.setState({lista:resposta});
+        })
+
+        PubSub.subscribe('novo-registro-adicionado',(topico,resposta)=>{
+            this.setState({lista:resposta});
         })
     }
     
-
-    atualizaListagem(retorno){
-        this.setState({lista:retorno});
-    }
-
     render(){
         console.log(this.state.lista);
         return(
             <div>
-                <FormularioAutor atualizaListagem = {this.atualizaListagem}/>
+                <FormularioAutor/>
                 <TabelaAutores lista={this.state.lista}/>
             </div>
         );

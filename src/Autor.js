@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import InputCustomizado from './components/InputCustomizado';
 import PubSub from 'pubsub-js';
+import TrataErros from './TrataErros';
 
 class FormularioAutor extends Component{
     constructor(){
@@ -13,7 +14,10 @@ class FormularioAutor extends Component{
     }
 
     cadastraForm(evento){
-		evento.preventDefault();
+        evento.preventDefault();
+
+        PubSub.publish('limpa-campos',{});
+
 		fetch('http://cdc-react.herokuapp.com/api/autores',{
 			method:'POST',
 			headers:{
@@ -23,11 +27,23 @@ class FormularioAutor extends Component{
 				nome:this.state.nome, email: this.state.email, senha: this.state.senha
 			})
 		}).then((response)=>{
-			response.json()
+            response.json()
+            
 			.then((resultado)=>{
-				PubSub.publish('novo-registro-adicionado',resultado);
-			})
-		})
+
+                if(resultado.ok){
+                    PubSub.publish('novo-registro-adicionado',resultado);
+                    this.setState({nome:'', email:'', senha:''})
+                }
+                else{
+                    var erros = new TrataErros();
+                    erros.recebeErro(resultado);
+                }
+            });
+        }).catch((erro)=>{
+            console.log(erro);
+        });
+        
 	}
 
 	setNome(evento){
@@ -110,7 +126,6 @@ export default class AutorBox extends Component{
     }
     
     render(){
-        console.log(this.state.lista);
         return(
             <div>
                 <FormularioAutor/>

@@ -8,9 +8,6 @@ class FormularioAutor extends Component{
         super();
         this.state = {nome:'', email:'', senha:''}
         this.cadastraForm	= this.cadastraForm.bind(this);
-		this.setNome 		= this.setNome.bind(this);
-		this.setEmail 		= this.setEmail.bind(this);
-		this.setSenha		= this.setSenha.bind(this);
     }
 
     cadastraForm(evento){
@@ -46,25 +43,19 @@ class FormularioAutor extends Component{
         
 	}
 
-	setNome(evento){
-		this.setState({nome:evento.target.value})
-	}
-
-	setEmail(evento){
-		this.setState({email:evento.target.value})
-	}
-
-	setSenha(evento){
-		this.setState({senha:evento.target.value})
+	mudaEstadoCampo(nomeInput,evento){
+        let campoAlterado = {};
+        campoAlterado[nomeInput] = evento.target.value;
+		this.setState(campoAlterado);
 	}
 
     render(){
         return(
             <div className="pure-form pure-form-aligned">
             <form className="pure-form pure-form-aligned" onSubmit={this.cadastraForm}>
-                <InputCustomizado id="nome" label="Nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}/>
-                <InputCustomizado id="email" label="Email" type="email" name="email" value={this.state.email} onChange={this.setEmail}/>
-                <InputCustomizado id="senha" label="Senha" type="password" name="senha" value={this.state.senha} onChange={this.setSenha}/>
+                <InputCustomizado id="nome" label="Nome" type="text" name="nome" value={this.state.nome} onChange={this.mudaEstadoCampo.bind(this,"nome")}/>
+                <InputCustomizado id="email" label="Email" type="email" name="email" value={this.state.email} onChange={this.mudaEstadoCampo.bind(this,"email")}/>
+                <InputCustomizado id="senha" label="Senha" type="password" name="senha" value={this.state.senha} onChange={this.mudaEstadoCampo.bind(this,"senha")}/>
                 <div className="pure-control-group">
                     <label></label> 
                     <button type="submit" className="pure-button pure-button-primary">Gravar</button>                                    
@@ -80,7 +71,7 @@ class TabelaAutores extends Component{
 
     render(){
         return(
-            <div>            
+            <div>        
                 <table className="pure-table">
                     <thead>
                     <tr>
@@ -128,6 +119,9 @@ export default class AutorBox extends Component{
     render(){
         return(
             <div>
+                 <div className="header">
+                    <h1>Cadastro de autores</h1>
+                </div>    
                 <FormularioAutor/>
                 <TabelaAutores lista={this.state.lista}/>
             </div>

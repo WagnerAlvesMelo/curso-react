@@ -5,18 +5,20 @@ import './css/pure-min.css'
 import './css/side-menu.css'
 import App from './App';
 import {BrowserRouter as Router,Route, Switch} from 'react-router-dom'
-import {createBrowserHistory} from 'history'
 import AutorBox from './Autor'
+import Home from './Home';
+import LivroBox from './Livro';
 
-const history = createBrowserHistory();
 
 ReactDOM.render(
     (
     <Router>
         <App>
             <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route path="/home" component={Home}/>
                 <Route path="/autor" component={AutorBox}/>
-                <Route path="/livro" />
+                <Route path="/livro" component={LivroBox} />
             </Switch>
         </App>
     </Router>
